@@ -4293,10 +4293,10 @@ public class Wallet extends BaseTaggableObject
      */
     private boolean adjustOutputDownwardsForFee(Transaction tx, CoinSelection coinSelection, Coin feePerKb,
             boolean ensureMinRequiredFee) {
+        if (ensureMinRequiredFee && feePerKb.compareTo(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE) < 0)
+            feePerKb = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE;
         final int vsize = tx.getVsize() + estimateVirtualBytesForSigning(coinSelection);
         Coin fee = feePerKb.multiply(vsize).divide(1000);
-        if (ensureMinRequiredFee && fee.compareTo(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE) < 0)
-            fee = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE;
         TransactionOutput output = tx.getOutput(0);
         output.setValue(output.getValue().subtract(fee));
         return !output.isDust();
